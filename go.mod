@@ -1,4 +1,4 @@
-module github.com/gophreak/go-blackjack
+module blackjack
 
 go 1.22.4
 
