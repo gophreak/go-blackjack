@@ -9,10 +9,43 @@ import (
 
 	"blackjack/blackjack"
 	"blackjack/dealer"
+	"blackjack/hand"
 	"blackjack/player"
 )
 
 func main() {
+	game := setupGameWithPlayers()
+
+	printDealerHand(game)
+
+	fmt.Println("-----------------")
+
+	printPlayersHand(game)
+
+	fmt.Println("=================")
+
+	promptPlayersForDecision(game)
+
+	fmt.Println("==================================")
+
+	game.Finish()
+
+	fmt.Println("")
+
+	printDealerHand(game)
+
+	fmt.Println("-----------------")
+	printPlayersHand(game)
+
+	fmt.Println("=================")
+	fmt.Println("=================")
+
+	fmt.Println("")
+
+	printFinalSummary(game)
+}
+
+func setupGameWithPlayers() *blackjack.Game {
 	var game *blackjack.Game
 	var gameError error
 
@@ -38,118 +71,7 @@ func main() {
 		fmt.Printf("%s\n", gameError.Error())
 	}
 
-	// Print dealer hand
-	fmt.Println("")
-	fmt.Println(game.Dealer().Name())
-	fmt.Println("-------")
-	for _, c := range game.Dealer().Hand().GetCards() {
-		fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
-	}
-	fmt.Println("")
-	fmt.Println(renderTotal(game.Dealer()))
-
-	fmt.Println("-----------------")
-	// Print player hand
-	for {
-		current := game.Player()
-		if current == nil {
-			break
-		}
-
-		fmt.Println("")
-		fmt.Println(current.Name())
-		fmt.Println("---------")
-		for _, c := range current.Hand().GetCards() {
-			fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
-		}
-		fmt.Println("")
-		fmt.Println(renderTotal(current))
-		fmt.Println("-----------------")
-	}
-
-	fmt.Println("=================")
-
-	// Promp players to stand or draw
-	for {
-		current := game.Player()
-		if current == nil {
-			break
-		}
-
-		var response string
-
-		for current.Hand().CanPrompt() && response != "S" && response != "s" {
-			response = ""
-			var errorMessage string
-
-			for response != "D" && response != "S" && response != "d" && response != "s" {
-				fmt.Printf("%s%s (%s), Draw(D) or Stick(S)? ", errorMessage, current.Name(), renderTotal(current))
-				response = readLine()
-
-				errorMessage = "Invalid option: "
-			}
-			if response == "D" || response == "d" {
-				game.DrawCard(current)
-
-				fmt.Println("")
-				fmt.Println(current.Name())
-				fmt.Println("---------")
-				for _, c := range current.Hand().GetCards() {
-					fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
-				}
-				fmt.Println("")
-				fmt.Println(renderTotal(current))
-				fmt.Println("-----------------")
-			}
-		}
-	}
-
-	fmt.Println("==================================")
-	fmt.Println("")
-
-	game.Finish()
-
-	// Print all final hands
-	fmt.Println(game.Dealer().Name())
-	fmt.Println("-------")
-	for _, c := range game.Dealer().Hand().GetCards() {
-		fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
-	}
-	fmt.Println("")
-	fmt.Println(renderTotal(game.Dealer()))
-
-	fmt.Println("-----------------")
-	for {
-		current := game.Player()
-		if current == nil {
-			break
-		}
-
-		fmt.Println("")
-		fmt.Println(current.Name())
-		fmt.Println("---------")
-		for _, c := range current.Hand().GetCards() {
-			fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
-		}
-		fmt.Println("")
-		fmt.Println(renderTotal(current))
-		fmt.Println("-----------------")
-	}
-
-	fmt.Println("=================")
-	fmt.Println("=================")
-
-	fmt.Println("")
-
-	fmt.Println(game.Dealer().Name(), renderTotal(game.Dealer()))
-	for {
-		current := game.Player()
-		if current == nil {
-			break
-		}
-		fmt.Printf("%s (%d): %s\n", current.Name(), current.Hand().GetMaxValue(), current.Hand().GetStatus().String())
-	}
-	fmt.Println("")
+	return game
 }
 
 func validateNum(n string) int {
@@ -165,6 +87,100 @@ func readLine() string {
 	line, _ := bufio.NewReader(bufio.NewReader(os.Stdin)).ReadString('\n')
 
 	return strings.Replace(line, "\n", "", 1)
+}
+
+func printDealerHand(game *blackjack.Game) {
+	fmt.Println("")
+	fmt.Println(game.Dealer().Name())
+	fmt.Println("-------")
+	for _, c := range game.Dealer().Hand().GetCards() {
+		fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
+	}
+	fmt.Println("")
+	fmt.Println(renderTotal(game.Dealer()))
+}
+
+func printPlayersHand(game *blackjack.Game) {
+	for {
+		current := game.Player()
+		if current == nil {
+			break
+		}
+
+		fmt.Println("")
+		fmt.Println(current.Name())
+		fmt.Println("---------")
+		for _, c := range current.Hand().GetCards() {
+			fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
+		}
+		fmt.Println("")
+		fmt.Println(renderTotal(current))
+		fmt.Println("-----------------")
+	}
+}
+
+func promptPlayersForDecision(game *blackjack.Game) {
+	for {
+		current := game.Player()
+		if current == nil {
+			return
+		}
+
+		var response string
+
+		for shouldPrompt(current.Hand(), response) {
+			response = ""
+			var errorMessage string
+
+			for !isResponseDealOrStick(response) {
+				fmt.Printf("%s%s (%s), Draw(D) or Stick(S)? ", errorMessage, current.Name(), renderTotal(current))
+				response = readLine()
+
+				errorMessage = "Invalid option: "
+			}
+			if isResponseDeal(response) {
+				game.DrawCard(current)
+
+				fmt.Println("")
+				fmt.Println(current.Name())
+				fmt.Println("---------")
+				for _, c := range current.Hand().GetCards() {
+					fmt.Printf("%s of %s\n", c.GetRank(), c.GetSuit())
+				}
+				fmt.Println("")
+				fmt.Println(renderTotal(current))
+				fmt.Println("-----------------")
+			}
+		}
+	}
+}
+
+func isResponseDealOrStick(response string) bool {
+	return isResponseDeal(response) || isResponseStick(response)
+}
+
+func isResponseDeal(response string) bool {
+	return response == "D" || response == "d"
+}
+
+func isResponseStick(response string) bool {
+	return response == "S" || response == "s"
+}
+
+func shouldPrompt(hand *hand.Hand, lastResponse string) bool {
+	return hand.CanPrompt() && !isResponseStick(lastResponse)
+}
+
+func printFinalSummary(game *blackjack.Game) {
+	fmt.Println(game.Dealer().Name(), renderTotal(game.Dealer()))
+	for {
+		current := game.Player()
+		if current == nil {
+			break
+		}
+		fmt.Printf("%s (%d): %s\n", current.Name(), current.Hand().GetMaxValue(), current.Hand().GetStatus().String())
+	}
+	fmt.Println("")
 }
 
 func renderTotal(p blackjack.Player) string {
