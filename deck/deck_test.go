@@ -27,7 +27,3 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "King", playable[51].GetRank())
 	assert.Equal(t, "Clubs", playable[51].GetSuit())
 }
-
-func TestDeck_Draw(t *testing.T) {
-
-}
