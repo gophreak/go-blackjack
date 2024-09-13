@@ -13,7 +13,7 @@ func TestNew_FailsOnZeroDeck(t *testing.T) {
 	_, err := chute.New(0)
 
 	assert.Error(t, err)
-	assert.Equal(t, "must have at least 1 deck", err)
+	assert.Equal(t, "must have at least 1 deck", err.Error())
 }
 
 func TestDraw_ReturnsCard(t *testing.T) {
