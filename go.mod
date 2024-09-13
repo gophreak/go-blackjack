@@ -1,4 +1,4 @@
-module blackjack
+module go-blackjack
 
 go 1.22.4
 
