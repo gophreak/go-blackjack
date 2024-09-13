@@ -48,7 +48,7 @@ func NewGame(players []Player, dealer Dealer) (*Game, error) {
 
 	chute, err := chute.New(numDecksForGame)
 	if err != nil {
-		panic("developer error - invalud number of decks")
+		panic("developer error - invalid number of decks")
 	}
 
 	game := &Game{

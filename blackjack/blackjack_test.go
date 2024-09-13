@@ -9,34 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type MockPlayer struct {
-	hand *hand.Hand
-	name string
-}
-
-func (p MockPlayer) Hand() *hand.Hand {
-	return p.hand
-}
-func (p MockPlayer) Name() string {
-	return p.name
-}
-
-type MockDealer struct {
-	hand   *hand.Hand
-	name   string
-	status string
-}
-
-func (d MockDealer) Hand() *hand.Hand {
-	return d.hand
-}
-func (d MockDealer) Name() string {
-	return d.name
-}
-func (d MockDealer) Status() string {
-	return d.status
-}
-
 func Test_NewGame_ReturnsErrorNotEnoughPlayers(t *testing.T) {
 	game, err := blackjack.NewGame([]blackjack.Player{}, newMockDealer())
 
@@ -199,6 +171,34 @@ func TestGame_DrawCardToFinishALwaysHitsMinimum_16(t *testing.T) {
 
 		assert.LessOrEqual(t, 16, game.Dealer().Hand().GetMaxValue())
 	}
+}
+
+type MockPlayer struct {
+	hand *hand.Hand
+	name string
+}
+
+func (p MockPlayer) Hand() *hand.Hand {
+	return p.hand
+}
+func (p MockPlayer) Name() string {
+	return p.name
+}
+
+type MockDealer struct {
+	hand   *hand.Hand
+	name   string
+	status string
+}
+
+func (d MockDealer) Hand() *hand.Hand {
+	return d.hand
+}
+func (d MockDealer) Name() string {
+	return d.name
+}
+func (d MockDealer) Status() string {
+	return d.status
 }
 
 func newMockPlayer() *MockPlayer {
