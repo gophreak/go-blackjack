@@ -7,8 +7,8 @@ var d deck
 func init() {
 	z := 0
 
-	for x := 0; x < 4; x++ {
-		for y := 0; y < 13; y++ {
+	for x := 0; x < SuitCount; x++ {
+		for y := 0; y < RankCount; y++ {
 			d[z] = MakeCard(Suit(x), Rank(y))
 			z++
 		}
