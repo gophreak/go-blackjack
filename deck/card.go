@@ -21,13 +21,9 @@ func (c Card) GetRank() string {
 }
 
 func (c Card) GetValue() int {
-	return func(idx int) int {
-		val := idx + 1 // zero index
-		switch {
-		case val > 10:
-			return 10
-		}
-
-		return val
-	}(int(c.rank))
+	val := int(c.rank) + 1
+	if val > 10 {
+		return 10
+	}
+	return val
 }
