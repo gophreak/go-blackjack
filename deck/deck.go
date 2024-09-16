@@ -18,3 +18,41 @@ func init() {
 func Deck() deck {
 	return d
 }
+
+
+type Rank int
+
+const (
+	Ace Rank = iota
+	Two
+	Three
+	Four
+	Five
+	Six
+	Seven
+	Eight
+	Nine
+	Ten
+	Jack
+	Queen
+	King
+	RankCount int = iota
+)
+
+func (r Rank) String() string {
+	return [...]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}[r]
+}
+
+type Suit int
+
+const (
+	Hearts Suit = iota
+	Diamonds
+	Spades
+	Clubs
+	SuitCount int = iota
+)
+
+func (s Suit) String() string {
+	return [...]string{"Hearts", "Diamonds", "Spades", "Clubs"}[s]
+}
