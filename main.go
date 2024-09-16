@@ -178,7 +178,7 @@ func printFinalSummary(game *blackjack.Game) {
 		if current == nil {
 			break
 		}
-		fmt.Printf("%s (%d): %s\n", current.Name(), current.Hand().GetMaxValue(), current.Hand().GetStatus().String())
+		fmt.Printf("%s (%d): %s\n", current.Name(), current.Hand().GetMaxValue(), current.Hand().CompareHand(*game.Dealer().Hand()).String())
 	}
 	fmt.Println("")
 }

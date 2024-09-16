@@ -8,6 +8,15 @@ const (
 	blackjackValue = 21
 )
 
+type Status int
+
+const (
+	Lost Status = iota
+	Draw
+	Win
+	Blackjack
+)
+
 type options int
 
 const (
@@ -16,20 +25,10 @@ const (
 	bust
 )
 
-type status int
-
-const (
-	lost status = iota
-	draw
-	win
-	blackjack
-)
-
 type Hand struct {
 	cards    []*deck.Card
 	min, max int
 	option   options
-	status   status
 }
 
 func New() *Hand {
@@ -70,37 +69,31 @@ func (h Hand) Count() int {
 	return len(h.cards)
 }
 
-func (h *Hand) CompareHand(dealerHand Hand) {
+func (h *Hand) CompareHand(dealerHand Hand) Status {
 	// hand is assumed lost, unless otherwise
 
 	// hand bust, don't do anything
 	if h.IsBust() {
-		return
+		return Lost
 	}
 
 	// dealer has blackjack - if hand has blackjack then draw, otherwise lost
 	if dealerHand.HasBlackjack() {
 		if h.HasBlackjack() {
-			h.status = draw
+			return Draw
 		}
 
-		return
+		return Lost
 	}
 
 	// dealer is not blackjack, hand wins if blackjack
 	if h.HasBlackjack() {
-		h.status = blackjack
-
-		return
+		return Blackjack
 	}
 
 	// dealer is bust, hand wins if not bust
 	if dealerHand.IsBust() {
-		if !h.IsBust() {
-			h.status = win
-		}
-
-		return
+		return Win
 	}
 
 	// dealer is not bust or blackjack - compare maximum hand values
@@ -108,21 +101,16 @@ func (h *Hand) CompareHand(dealerHand Hand) {
 
 	// hand has higher value - win
 	if h.max > valueToBeat {
-		h.status = win
-
-		return
+		return Win
 	}
 
 	// hand has same value - draw
 	if h.max == valueToBeat {
-		h.status = draw
+		return Draw
 	}
 
 	// hand is not bust, does not have blackjack, and has less maximum hand value than dealer - lost (default)
-}
-
-func (h *Hand) GetStatus() status {
-	return h.status
+	return Lost
 }
 
 func (h *Hand) calculate() {
@@ -156,6 +144,6 @@ func (h *Hand) calculate() {
 	}
 }
 
-func (s status) String() string {
+func (s Status) String() string {
 	return [...]string{"LOST", "DRAW", "WIN", "BLACKJACK"}[s]
 }

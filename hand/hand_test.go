@@ -337,11 +337,7 @@ func TestHand_CompareHand_PlayerLosesWhenBust(t *testing.T) {
 
 	for name, data := range testCases {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, 0, int(playerHand.GetStatus()))
-
-			playerHand.CompareHand(*data.dealerHand)
-
-			assert.Equal(t, 0, int(playerHand.GetStatus()))
+			assert.Equal(t, 0, int(playerHand.CompareHand((*data.dealerHand))))
 		})
 	}
 }
@@ -402,11 +398,7 @@ func TestHand_CompareHand_AgainstDealerBlackjack(t *testing.T) {
 
 	for name, data := range testCases {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, 0, int(data.playerHand.GetStatus()))
-
-			data.playerHand.CompareHand(*dealerHand)
-
-			assert.Equal(t, data.expectedStatus, int(data.playerHand.GetStatus()))
+			assert.Equal(t, data.expectedStatus, int(data.playerHand.CompareHand(*dealerHand)))
 		})
 	}
 }
@@ -489,11 +481,7 @@ func TestHand_CompareHand_AgainstDealerBust(t *testing.T) {
 
 	for name, data := range testCases {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, 0, int(data.playerHand.GetStatus()))
-
-			data.playerHand.CompareHand(*dealerHand)
-
-			assert.Equal(t, data.expectedStatus, int(data.playerHand.GetStatus()))
+			assert.Equal(t, data.expectedStatus, int(data.playerHand.CompareHand(*dealerHand)))
 		})
 	}
 }
@@ -574,11 +562,7 @@ func TestHand_CompareHand_AgainstDealerHighValue(t *testing.T) {
 
 	for name, data := range testCases {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, 0, int(data.playerHand.GetStatus()))
-
-			data.playerHand.CompareHand(*dealerHand)
-
-			assert.Equal(t, data.expectedStatus, int(data.playerHand.GetStatus()))
+			assert.Equal(t, data.expectedStatus, int(data.playerHand.CompareHand(*dealerHand)))
 		})
 	}
 }
@@ -653,10 +637,7 @@ func TestStatus_String_ReturnsAppropriateMessage(t *testing.T) {
 
 	for name, data := range testCases {
 		t.Run(name, func(t *testing.T) {
-			hand := data.playerHand
-			hand.CompareHand(*dealerHand)
-
-			assert.Equal(t, data.expectedStatus, hand.GetStatus().String())
+			assert.Equal(t, data.expectedStatus, data.playerHand.CompareHand(*dealerHand).String())
 		})
 	}
 }
