@@ -43,14 +43,17 @@ func shuffle(a []*deck.Card) chan *deck.Card {
 		ch <- a[i]
 	}
 
+	close(ch)
+
 	return ch
 }
 
 func (c Chute) Draw() *deck.Card {
-	select {
-	case card := <-c.cards:
+
+	// cloe channel and range over
+	for card := range c.cards {
 		return card
-	default:
-		return nil
 	}
+
+	return nil
 }
