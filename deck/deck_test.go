@@ -9,7 +9,7 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	playable := deck.Deck()
+	playable := deck.Init()
 
 	assert.Len(t, playable, 52)
 	assert.Equal(t, "Ace", playable[0].GetRank())
@@ -27,7 +27,6 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "King", playable[51].GetRank())
 	assert.Equal(t, "Clubs", playable[51].GetSuit())
 }
-
 
 func TestRank_String(t *testing.T) {
 	assert.Equal(t, "Ace", deck.Ace.String())

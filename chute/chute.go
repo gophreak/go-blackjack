@@ -17,11 +17,11 @@ func New(numDecks int) (Chute, error) {
 	if numDecks < 1 {
 		return Chute{}, errors.New("must have at least 1 deck")
 	}
-	var cards = make([]*deck.Card, numDecks*len(deck.Deck()))
+	var cards = make([]*deck.Card, numDecks*deck.Size)
 
 	var i int
 	for x := 0; x < numDecks; x++ {
-		for _, card := range deck.Deck() {
+		for _, card := range deck.Init() {
 			cards[i] = card
 			i++
 		}

@@ -1,10 +1,11 @@
 package deck
 
-type deck [52]*Card
+const Size = 52
 
-var d deck
+type deck [Size]*Card
 
-func init() {
+func Init() [Size]*Card {
+	var d deck
 	z := 0
 
 	for x := 0; x < 4; x++ {
@@ -13,12 +14,9 @@ func init() {
 			z++
 		}
 	}
-}
 
-func Deck() deck {
 	return d
 }
-
 
 type Rank int
 
