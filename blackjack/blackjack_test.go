@@ -14,7 +14,7 @@ func Test_NewGame_ReturnsErrorNotEnoughPlayers(t *testing.T) {
 
 	assert.Nil(t, game)
 	assert.Error(t, err)
-	assert.Equal(t, "invalid number of players. (1 - 6)", err.Error())
+	assert.EqualError(t, blackjack.ErrInvalidPlayerNumber, err.Error())
 }
 
 func Test_NewGame_ReturnsErrorTooManyPlayers(t *testing.T) {
@@ -30,7 +30,7 @@ func Test_NewGame_ReturnsErrorTooManyPlayers(t *testing.T) {
 
 	assert.Nil(t, game)
 	assert.Error(t, err)
-	assert.Equal(t, "invalid number of players. (1 - 6)", err.Error())
+	assert.EqualError(t, blackjack.ErrInvalidPlayerNumber, err.Error())
 }
 
 func Test_NewGame_ReturnsGameMinPlayers(t *testing.T) {

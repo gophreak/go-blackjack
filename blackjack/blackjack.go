@@ -41,9 +41,11 @@ type Game struct {
 	playerIdx int
 }
 
+var ErrInvalidPlayerNumber = fmt.Errorf("invalid number of players. (%d - %d)", MinPlayers, MaxPlayers)
+
 func NewGame(players []Player, dealer Dealer) (*Game, error) {
 	if MinPlayers > len(players) || MaxPlayers < len(players) {
-		return nil, fmt.Errorf("invalid number of players. (%d - %d)", MinPlayers, MaxPlayers)
+		return nil, ErrInvalidPlayerNumber
 	}
 
 	chute, err := chute.New(numDecksForGame)

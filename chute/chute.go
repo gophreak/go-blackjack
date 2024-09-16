@@ -13,9 +13,11 @@ type Chute struct {
 	cards chan *deck.Card
 }
 
+var ErrMinDeckRequirement = errors.New("must have at least 1 deck")
+
 func New(numDecks int) (Chute, error) {
 	if numDecks < 1 {
-		return Chute{}, errors.New("must have at least 1 deck")
+		return Chute{}, ErrMinDeckRequirement
 	}
 	var cards = make([]*deck.Card, numDecks*deck.Size)
 
