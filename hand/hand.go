@@ -17,18 +17,8 @@ const (
 	Blackjack
 )
 
-type options int
-
-const (
-	ready options = iota
-	pass
-	bust
-)
-
 type Hand struct {
-	cards    []*deck.Card
-	min, max int
-	option   options
+	cards []*deck.Card
 }
 
 func New() *Hand {
@@ -40,29 +30,48 @@ func (h Hand) GetCards() []*deck.Card {
 }
 
 func (h Hand) CanPrompt() bool {
-	return ready == h.option
+	return !h.IsBust()
 }
 
 func (h Hand) IsBust() bool {
-	return bust == h.option
+	return h.GetMinValue() > blackjackValue
 }
 
 func (h Hand) HasBlackjack() bool {
-	return h.Count() == 2 && blackjackValue == h.max
+	return h.Count() == 2 && blackjackValue == h.GetMaxValue()
 }
 
 func (h *Hand) AddCard(card *deck.Card) {
 	h.cards = append(h.cards, card)
-
-	h.calculate()
 }
 
 func (h Hand) GetMaxValue() int {
-	return h.max
+	var val int
+	for i := 0; i < len(h.cards); i++ {
+		cardVal := h.cards[i].GetValue()
+		val += cardVal
+
+		// only apply higher value if doesn't exceed 21
+		if cardVal == 1 && val+10 <= blackjackValue {
+			val += 10
+		}
+	}
+	// if max is over 21, just return min value
+	if val > blackjackValue {
+		return h.GetMinValue()
+	}
+
+	return val
 }
 
 func (h Hand) GetMinValue() int {
-	return h.min
+	var val int
+
+	for i := 0; i < len(h.cards); i++ {
+		val += h.cards[i].GetValue()
+	}
+
+	return val
 }
 
 func (h Hand) Count() int {
@@ -99,49 +108,19 @@ func (h *Hand) CompareHand(dealerHand Hand) Status {
 	// dealer is not bust or blackjack - compare maximum hand values
 	valueToBeat := dealerHand.GetMaxValue()
 
+	max := h.GetMaxValue()
 	// hand has higher value - win
-	if h.max > valueToBeat {
+	if max > valueToBeat {
 		return Win
 	}
 
 	// hand has same value - draw
-	if h.max == valueToBeat {
+	if max == valueToBeat {
 		return Draw
 	}
 
 	// hand is not bust, does not have blackjack, and has less maximum hand value than dealer - lost (default)
 	return Lost
-}
-
-func (h *Hand) calculate() {
-	h.min, h.max = 0, 0
-
-	for i := 0; i < len(h.cards); i++ {
-		cardVal := h.cards[i].GetValue()
-		h.min += cardVal
-		h.max += cardVal
-
-		// only apply higher value if doesn't exceed 21
-		if cardVal == 1 && h.max+10 <= blackjackValue {
-			h.max += 10
-		}
-	}
-	// if max is over 21, just return min value
-	if h.max > blackjackValue {
-		h.max = h.min
-	}
-
-	if h.max == blackjackValue {
-		h.option = pass
-
-		return
-	}
-
-	if h.GetMinValue() > blackjackValue {
-		h.option = bust
-
-		return
-	}
 }
 
 func (s Status) String() string {
